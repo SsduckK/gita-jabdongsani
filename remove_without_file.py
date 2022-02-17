@@ -1,9 +1,4 @@
 import os, glob
-import numpy as np
-import json
-import math
-import shutil
-
 
 def trim_empty_anno_frames(src_path):
     dir_names = glob.glob(os.path.join(src_path,"*"))	#src_path 폴더 아래 모든 파일을 리스트로 구성
