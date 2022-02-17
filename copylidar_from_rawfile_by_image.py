@@ -1,6 +1,7 @@
 import os, glob
 import shutil
 
+
 def trim_empty_anno_frames(src_path, dst_path):
     dir_names = glob.glob(os.path.join(src_path,"*"))	#src_path 폴더 아래 모든 파일을 리스트로 구성
     dest_dir = glob.glob(os.path.join(dst_path, "*"))	#dst_path 폴더 아래 모든 파일을 리스트로 구성
