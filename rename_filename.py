@@ -18,6 +18,7 @@ def rename_filename(src, global_count):
 
 
 def create_bag_directory(src):
+    '''
     dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*')))
     for date_count in dir_name:
         date = date_count.split('/')[-1:][0]
@@ -39,11 +40,52 @@ def create_bag_directory(src):
                     count = count + 1
                     renamed_file = date + '_' + resolution + '_' + region + '_' + count_str + '.bag'
                     shutil.copyfile(bag_name, os.path.join(src, new_file_dir, renamed_file))
+    '''
+
+    dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*', '*', '*')))
+    for files in dir_name:
+        count = 1
+        region = files.split('/')[-1:][0]
+        resolution = files.split('/')[-2:][0]
+        date = files.split('/')[-3:][0]
+        #print(date, resolution, region)
+        bag_files = natsort.natsorted(glob.glob(os.path.join(files, '*')))
+        new_file_dir = 'rosbag/' + date + '_' + region
+        os.makedirs(os.path.join(src, new_file_dir), exist_ok=True)
+        for bag_file in bag_files:
+            count_str = str(count).zfill(4)
+            renamed_bagfile = date + '_' + resolution + '_' + region + '_' + count_str + '.bag'
+            count = count + 1
+            shutil.copyfile(bag_file, os.path.join(src, new_file_dir, renamed_bagfile))
+
 
 
 def create_img_directory(src):
     dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*')))
-    print(dir_name)
+    for date_count in dir_name:
+        date = date_count.split('/')[-1:][0]
+        resolution_dir = glob.glob(os.path.join(date_count, '*'))
+        for resolution_count in resolution_dir:
+            resolution = resolution_count.split('/')[-1:][0]
+            region_dir = glob.glob(os.path.join(resolution_count, '*'))
+            for region_count in region_dir:
+                count = 1
+                region = region_count.split('/')[-1:][0]
+                file_dir = glob.glob(os.path.join(region_count, '*'))
+                file_dir = natsort.natsorted(file_dir)
+                new_file_dir = 'extracted/' + date + '_' + region
+                os.makedirs(os.path.join(src, new_file_dir, 'image'), exist_ok=True)
+                os.makedirs(os.path.join(src, new_file_dir, 'lidar'), exist_ok=True)
+                for file in file_dir:
+                    image = natsort.natsorted(glob.glob(os.path.join(file, '*', '*.jpg')))
+                    lidar = natsort.natsorted(glob.glob(os.path.join(file, '*', '*.npy')))
+                    for img, lid in zip(image, lidar):
+                        count_str = str(count).zfill(4)
+                        rename_img = date + '_' + resolution + '_' + region + '_' + count_str + '.jpg'
+                        rename_lid = date + '_' + resolution + '_' + region + '_' + count_str + '.npy'
+                        shutil.copyfile(img, os.path.join(src, new_file_dir, 'image', rename_img))
+                        shutil.copyfile(lid, os.path.join(src, new_file_dir, 'lidar', rename_lid))
+                        count = count + 1
 
 if __name__ == "__main__":
     src_img = "/home/ri/workspace/test_image_picture"
