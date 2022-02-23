@@ -88,17 +88,30 @@ def create_img_directory(src):
                         count = count + 1
     """
     dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*', '*', '*', '*', '*')))
+    print(dir_name)
+    image, lidar= '', ''
     for files in dir_name:
         count = 1
-        imglid = files.split('/')[-1:][0]
-        region = files.split('/')[-2:][0]
-        resolution = files.split('/')[-3:][0]
-        date = files.split('/')[-4:][0]
-        file = natsort.natsorted(dir_name)
+        imglid = files.split('/')[-2:][0]
+        region = files.split('/')[-3:][0]
+        resolution = files.split('/')[-4:][0]
+        date = files.split('/')[-5:][0]
+
         new_file_dir = 'extracted/' + date + '_' + resolution + '_' + region
-        print(files)
-        #os.makedirs(os.path.join(src, new_file_dir, 'image'), exist_ok=True)
-        #os.makedirs(os.path.join(src, new_file_dir, 'lidar'), exist_ok=True)
+        os.makedirs(os.path.join(src, new_file_dir, 'image'), exist_ok=True)
+        os.makedirs(os.path.join(src, new_file_dir, 'lidar'), exist_ok=True)
+        if imglid == 'image':
+            image = natsort.natsorted(glob.glob(os.path.join(files, '*')))
+        elif imglid == 'lidar':
+            lidar = natsort.natsorted(glob.glob(os.path.join(files, '*')))
+        for img, lid in zip(image, lidar):
+            count_str = str(count).zfill(4)
+            rename_img = date + '_' + resolution + '_' + region + '_' + count_str + '.jpg'
+            rename_lid = date + '_' + resolution + '_' + region + '_' + count_str + '.npy'
+            shutil.copyfile(img, os.path.join(src, new_file_dir, 'image', rename_img))
+            shutil.copyfile(lid, os.path.join(src, new_file_dir, 'lidar', rename_lid))
+            count = count + 1
+
 
 if __name__ == "__main__":
     src_img = "/home/ri/workspace/test_image_picture"
