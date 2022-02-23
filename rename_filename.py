@@ -59,8 +59,8 @@ def create_bag_directory(src):
             shutil.copyfile(bag_file, os.path.join(src, new_file_dir, renamed_bagfile))
 
 
-
 def create_img_directory(src):
+    """
     dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*')))
     for date_count in dir_name:
         date = date_count.split('/')[-1:][0]
@@ -86,11 +86,24 @@ def create_img_directory(src):
                         shutil.copyfile(img, os.path.join(src, new_file_dir, 'image', rename_img))
                         shutil.copyfile(lid, os.path.join(src, new_file_dir, 'lidar', rename_lid))
                         count = count + 1
+    """
+    dir_name = natsort.natsorted(glob.glob(os.path.join(src, '*', '*', '*', '*', '*')))
+    for files in dir_name:
+        count = 1
+        imglid = files.split('/')[-1:][0]
+        region = files.split('/')[-2:][0]
+        resolution = files.split('/')[-3:][0]
+        date = files.split('/')[-4:][0]
+        file = natsort.natsorted(dir_name)
+        new_file_dir = 'extracted/' + date + '_' + resolution + '_' + region
+        print(files)
+        #os.makedirs(os.path.join(src, new_file_dir, 'image'), exist_ok=True)
+        #os.makedirs(os.path.join(src, new_file_dir, 'lidar'), exist_ok=True)
 
 if __name__ == "__main__":
     src_img = "/home/ri/workspace/test_image_picture"
     src_bag = "/home/ri/workspace/test_bagfiles"
     global_count = 1
     #rename_filename(src_img, global_count)
-    create_bag_directory(src_bag)
-    #create_img_directory(src_img)
+    #create_bag_directory(src_bag)
+    create_img_directory(src_img)
